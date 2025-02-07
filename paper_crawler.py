@@ -5,7 +5,7 @@ import time
 import os
 
 # 输入你的搜索关键词
-search_query = "machine learning"
+search_query = "Single atomic nanozyme"
 google_scholar_url = "https://scholar.google.com/scholar"
 
 # 模拟浏览器的请求头
@@ -52,7 +52,7 @@ def get_scholar_results(query, num_pages=1):
 
             if pdf_link:
                 # 生成PDF文件名
-                pdf_filename = os.path.join(pdf_folder, f"{title[:50]}.pdf")  # 限制文件名长度
+                pdf_filename = os.path.join(pdf_folder, f"{title}.pdf")  # 限制文件名长度
                 download_pdf(pdf_link, pdf_filename)
 
             results.append({
