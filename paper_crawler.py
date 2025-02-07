@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import time
+import os
 
 # 输入你的搜索关键词
 search_query = "machine learning"
@@ -11,6 +12,20 @@ google_scholar_url = "https://scholar.google.com/scholar"
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
 }
+
+# 创建保存PDF的文件夹
+pdf_folder = "pdf_files"
+if not os.path.exists(pdf_folder):
+    os.makedirs(pdf_folder)
+
+def download_pdf(url, filename):
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        with open(filename, "wb") as f:
+            f.write(response.content)
+        print(f"Downloaded {filename}")
+    else:
+        print(f"Failed to download {filename}. Status code: {response.status_code}")
 
 def get_scholar_results(query, num_pages=1):
     results = []
@@ -33,7 +48,12 @@ def get_scholar_results(query, num_pages=1):
             link = title_tag["href"] if title_tag else "No link available"
             snippet = article.select_one(".gs_rs").text if article.select_one(".gs_rs") else "No snippet available"
             pdf_link_tag = article.select_one(".gs_or_ggsm a")
-            pdf_link = pdf_link_tag["href"] if pdf_link_tag else "No PDF link available"
+            pdf_link = pdf_link_tag["href"] if pdf_link_tag else None
+
+            if pdf_link:
+                # 生成PDF文件名
+                pdf_filename = os.path.join(pdf_folder, f"{title[:50]}.pdf")  # 限制文件名长度
+                download_pdf(pdf_link, pdf_filename)
 
             results.append({
                 "title": title,
